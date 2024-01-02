@@ -1,0 +1,60 @@
+version: '3.4'
+
+services:
+    cache:
+        image: redis:latest
+        container_name: redis_case
+        restart: always
+        ports:
+          - '6379:6379'
+        volumes: 
+          - cache:/data
+        environment:
+          - ALLOW_EMPTY_PASSWORD=yes
+
+    service_instance1:
+        container_name: service_instance1
+        image: ${DOCKER_REGISTRY-}service
+        build:
+            context: .
+            dockerfile: Service/Dockerfile
+        ports:
+            - "9001:8080"
+        depends_on:
+            - cache
+        environment:
+            - ASPNETCORE_ENVIRONMENT=Development
+            - ASPNETCORE_HTTP_PORTS=8080
+            - "Redis__ConnectionString=redis_case:6379"
+    service_instance2:
+        container_name: service_instance2
+        image: ${DOCKER_REGISTRY-}service
+        build:
+            context: .
+            dockerfile: Service/Dockerfile
+        ports:
+            - "9002:8080"
+        depends_on:
+            - cache
+        environment:
+            - ASPNETCORE_ENVIRONMENT=Development
+            - ASPNETCORE_HTTP_PORTS=8080
+            - "Redis__ConnectionString=redis_case:6379"
+    service_instance3:
+        container_name: service_instance3
+        image: ${DOCKER_REGISTRY-}service
+        build:
+            context: .
+            dockerfile: Service/Dockerfile
+        ports:
+            - "9003:8080"
+        depends_on:
+            - cache
+        environment:
+            - ASPNETCORE_ENVIRONMENT=Development
+            - ASPNETCORE_HTTP_PORTS=8080
+            - "Redis__ConnectionString=redis_case:6379"
+
+volumes:
+    cache:
+        driver: local
